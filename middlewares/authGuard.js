@@ -4,22 +4,26 @@ const jwt = require("jsonwebtoken");
 
 const jwtSecret = process.env.JWT_SECRET;
 
-const authGuard= async (req, res, next)=>{
-    const authHeader= req.headers["authorization"]
-    const token= authHeader && authHeader.split(" ")[1] // pois no bearer tem um espaço entre ele e o token: ex: Bearer ashffdgfdgl
+const authGuard = async (req, res, next) => {
+  const authHeader = req.headers["authorization"];
 
-    if (!token) return res.status(401).json({errors:["Acesso negado"]})
+  const token = authHeader && authHeader.split(" ")[1]; //  pois no bearer tem um espaço entre ele e o token: ex: Bearer ashffdgfdgl
 
-    try {
-        const verified=jwt.verify(token, jwtSecret)
+  // Check if header has a token
+  if (!token) return res.status(401).json({ errors: ["Acesso negado!"] });
 
-        req.user= await User.findById(verified.id).select("-password")
+  // Check if token is valid
+  try {
+    const verified = jwt.verify(token, jwtSecret);
 
-        next()
-        
-    } catch (error) {
-        res.status(401).json({errors:["token inválido"]})
-    }
-}
+    req.user = await User.findById(verified.id).select("-password");
 
-module.exports= authGuard
+    next();
+  } catch (err) {
+    res.status(400).json({ errors: ["O Token é inválido!"] });
+  }
+};
+
+module.exports = authGuard;
+
+
