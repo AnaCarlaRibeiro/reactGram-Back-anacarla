@@ -1,15 +1,16 @@
+const express = require("express");
+
+
 const { body } = require("express-validator");
-
-
-
-
+const app = express();
+app.use(express.json());
 
 const photoInsertValidation = () => {
 
 
   return [
     (req, res, next) => {
-      console.log("Valor do campo 'title': ", req.body.title); // adiciona console.log para o campo 'title'
+     
       next();
     },
     body("title")
